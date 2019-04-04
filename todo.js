@@ -25,16 +25,16 @@ var todoList = {
   },
   toggleAll: function() {
     var trueCount = 0;
-    for (var i = 0; i < this.todos.length; i++) {
-      if (this.todos[i].todoComplete === true) trueCount++;
-    }
-    for (var i = 0; i < this.todos.length; i++) {
-      if (this.todos.length === trueCount) {
-        this.todos[i].todoComplete = false;
-      } else {
-        this.todos[i].todoComplete = true;
-      }
-    }
+    var totalTodos = this.todos.length;
+
+    this.todos.forEach(function(todo) {
+      if (todo.todoComplete === true) trueCount++;
+    });
+
+    this.todos.forEach(function(todo) { 
+      todo.todoComplete = !(totalTodos === trueCount); 
+    });
+
     displayTodos(this.todos);
   }
 };
