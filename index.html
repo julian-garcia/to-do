@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+  <title>To Do List</title>
+</head>
+<body>
+  <h1>Todo List</h1>
+
+  <div class="group_actions">
+    <button class="group_actions__button" id="toggleAll">Toggle All</button>
+  </div>
+
+  <div class="todo_form">
+    <button class="todo_form__button" id="addTodo">Add</button>
+    <input class="todo_form__input" type="text" id="addTodoText">
+  </div>
+
+  <div class="todo_form">
+    <button class="todo_form__button" id="changeTodo">Change</button>
+    <input class="todo_form__input" type="text" id="changeTodoText">
+    <input class="todo_form__input" type="number" id="changeTodoPosition">
+  </div>
+  
+  <div class="todo_form">
+    <button class="todo_form__button" id="toggleCompleted">Complete</button>
+    <input class="todo_form__input" type="number" id="toggleCompletedPosition">
+  </div>
+
+  <ul class="todo_listing" id="todoListing"></ul>
+
+  <script src="ui.js"></script>
+  <script src="todo.js"></script>
+</body>
+</html>
