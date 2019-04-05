@@ -4,6 +4,10 @@ var todoListing = document.getElementById('todoListing'),
     addTodoText = document.getElementById('addTodoText'),
     toggleCompletedPosition = document.getElementById('toggleCompletedPosition');
 
+document.addEventListener('DOMContentLoaded', function() {
+  displayTodos(todoList.todos);
+});
+
 toggleAllButton
   .addEventListener('click', function() {
     todoList.toggleAll();
@@ -37,6 +41,12 @@ todoListing.addEventListener('keyup', function(e) {
   if (e.target.classList.contains('todo_input')) {
     var caretPosition = e.target.selectionStart;
     var todoPosition = parseInt(e.target.getAttribute('data-position'));
+
+    if (e.target.value === '') {
+      todoList.deleteTodo(todoPosition);
+      return;
+    }
+
     todoList.changeTodo(todoPosition, e.target.value);
 
     var inputElement = document.querySelector('.todo_input[data-position="' + todoPosition + '"]');
