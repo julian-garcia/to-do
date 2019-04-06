@@ -1,4 +1,5 @@
-// Backend todo list alongside methods to add/change/delete items
+// Backend data: Local storage based todo list alongside 
+// methods to add, change, delete items and toggle them as complete
 var todoList = {
   todos: (localStorage.getItem('todos') === null) ? [] : JSON.parse(localStorage.getItem('todos')),
   storeTodos: function() {

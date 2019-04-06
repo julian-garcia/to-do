@@ -1,17 +1,12 @@
 var todoListing = document.getElementById('todoListing'),
-    toggleAllButton = document.getElementById('toggleAll'),
     addTodoButton = document.getElementById('addTodo'),
     addTodoText = document.getElementById('addTodoText'),
-    toggleCompletedPosition = document.getElementById('toggleCompletedPosition');
+    toggleTodos = document.getElementById('toggleTodos');
 
 document.addEventListener('DOMContentLoaded', function() {
   displayTodos(todoList.todos);
+  toggleAllContext();
 });
-
-toggleAllButton
-  .addEventListener('click', function() {
-    todoList.toggleAll();
-  });
 
 addTodoButton
   .addEventListener('click', function() {
@@ -25,20 +20,20 @@ todoListing.addEventListener('click', function(e) {
     }
     if (e.target.classList.contains('status_button')) {
       var todoPosition = parseInt(e.target.getAttribute('data-position'));
-      var todoStatus = document.querySelector('i[data-position="' + todoPosition + '"]');
-      
-      if (todoStatus.classList.contains('fa-times-circle')) {
-        todoList.toggleCompleted(todoPosition);
-        document.querySelector('.status_button[data-position="' + todoPosition + '"]').innerText = 'Re-Do';
-      } else {
-        todoList.toggleCompleted(todoPosition);
-        document.querySelector('.status_button[data-position="' + todoPosition + '"]').innerText = 'Done';
-      }
+      todoList.toggleCompleted(todoPosition);
+    }
+  });
+
+addTodoText.addEventListener('keypress', function(e) {
+    var key = e.which || e.keyCode;
+    if (key === 13) {
+      todoList.addTodo(addTodoText.value);
+      addTodoText.value = '';
     }
   });
 
 todoListing.addEventListener('keyup', function(e) {
-  if (e.target.classList.contains('todo_input')) {
+  if (e.target.classList.contains('todo_form__input')) {
     var caretPosition = e.target.selectionStart;
     var todoPosition = parseInt(e.target.getAttribute('data-position'));
 
@@ -49,7 +44,7 @@ todoListing.addEventListener('keyup', function(e) {
 
     todoList.changeTodo(todoPosition, e.target.value);
 
-    var inputElement = document.querySelector('.todo_input[data-position="' + todoPosition + '"]');
+    var inputElement = document.querySelector('.todo_form__input[data-position="' + todoPosition + '"]');
     inputElement.focus();
     inputElement.setSelectionRange(caretPosition, caretPosition)
   }
@@ -62,39 +57,94 @@ function displayTodos(todos) {
   
   todos.forEach(function(todo, i) {
     var todoListItem = document.createElement('li');
-    var todoListItemCheck = document.createElement('i');
+    var spanElement = createSpan('item_buttons');
     var status;
 
-    if (todo.todoComplete){
-      todoListItemCheck.classList.add('far', 'fa-check-circle');
-      status = 'Re-Do';
-    } else {
-      todoListItemCheck.classList.add('far', 'fa-times-circle');
-      status = 'Done';
-    }
+    status = (todo.todoComplete) ? 'fa-grin' : 'fa-check';
 
-    todoListItemCheck.setAttribute('data-position', i);
-    todoListItem.append(todoListItemCheck);
-    todoListItem.append(createTodoInput(i, todo.todoText));
-    todoListItem.append(createButton(i, 'status_button', status));
-    todoListItem.append(createButton(i, 'delete_button', 'X'));
+    todoListItem.append(createInput(i, todo.todoText));
+    spanElement.append(createIcon(i, 'fas', status, 'status_button'));
+    spanElement.append(createIcon(i, 'far', 'fa-trash-alt', 'delete_button'));
+    todoListItem.append(spanElement);
     todoListing.append(todoListItem);
+
+    var inputElement = document.querySelector('.todo_form__input[data-position="' + i + '"]');
+
+    if (todo.todoComplete){
+      inputElement.classList.add('todo_form__input--strike');
+      inputElement.disabled = true;
+    } else {
+      inputElement.classList.remove('todo_form__input--strike');
+      inputElement.disabled = false;
+    }
   });
+  toggleAllContext();
 }
 
-function createButton(todoPosition, buttonClass, buttonText) {
+function createButton(todoPosition, buttonClasses, buttonText, buttonId, disabled) {
   var newButton = document.createElement('button');
-  newButton.classList.add('todo_form__button', buttonClass);
+  newButton.classList.add('todo_form__button', ...buttonClasses);
   newButton.textContent = buttonText;
   newButton.setAttribute('data-position', todoPosition);
+  newButton.id = buttonId;
+  if (disabled) {
+    newButton.setAttribute('disabled', disabled);
+  } else {
+    newButton.removeAttribute('disabled');
+  }
   return newButton;
 }
 
-function createTodoInput(todoPosition, todoText) {
-  var todoListItemInput = document.createElement('input');
-  todoListItemInput.setAttribute('type', 'text');
-  todoListItemInput.value = todoText;
-  todoListItemInput.className = 'todo_input';
-  todoListItemInput.setAttribute('data-position', todoPosition);
-  return todoListItemInput;
+function createIcon(todoPosition, faClass1, faClass2, iconClass) {
+  var newIcon = document.createElement('i');
+  newIcon.classList.add(faClass1, faClass2, iconClass);
+  newIcon.setAttribute('data-position', todoPosition);
+  return newIcon;
+}
+
+function createSpan(spanClass) {
+  var newSpan = document.createElement('span');
+  newSpan.classList.add(spanClass);
+  return newSpan;
+}
+
+function createInput(todoPosition, todoText) {
+  var newInput = document.createElement('input');
+  newInput.setAttribute('type', 'text');
+  newInput.value = todoText;
+  newInput.className = 'todo_form__input';
+  newInput.setAttribute('data-position', todoPosition);
+  return newInput;
+}
+
+function toggleAllContext() {
+  while (toggleTodos.hasChildNodes()) {
+    toggleTodos.removeChild(toggleTodos.firstChild);
+  }
+
+  var disabled, trueCount = 0;
+  var totalTodos = todoList.todos.length;
+
+  todoList.todos.forEach(function(todo) {
+    if (todo.todoComplete === true) trueCount++;
+  });
+
+  if (totalTodos == 0) {
+    buttonClass = 'fa-toggle-off';
+    disabled = true;
+  } else {
+    if (totalTodos == trueCount) {
+      buttonClass = 'fa-toggle-on';
+    } else {
+      buttonClass = 'fa-toggle-off';
+    }
+    disabled = false;
+  }
+
+  toggleTodos.append(createButton(0, ['todo_form__button', 'todo_form__button--lg', 'fas', buttonClass], '', 'toggleAll', disabled));
+
+  document.getElementById('toggleAll')
+    .addEventListener('click', function() {
+      todoList.toggleAll();
+    });
 }
