@@ -5,7 +5,6 @@ var todoListing = document.getElementById('todoListing'),
 
 document.addEventListener('DOMContentLoaded', function() {
   displayTodos(todoList.todos);
-  toggleAllContext();
 });
 
 addTodoButton
@@ -79,6 +78,7 @@ function displayTodos(todos) {
     }
   });
   toggleAllContext();
+  noTodosPlaceholder();
 }
 
 function createButton(todoPosition, buttonClasses, buttonText, buttonId, disabled) {
@@ -147,4 +147,12 @@ function toggleAllContext() {
     .addEventListener('click', function() {
       todoList.toggleAll();
     });
+}
+
+function noTodosPlaceholder() {
+  if (todoList.todos.length === 0) {
+    var noTodosParagraph = document.createElement('h2');
+    noTodosParagraph.textContent = 'You have zero to do... Add a task above';
+    todoListing.append(noTodosParagraph);
+  }
 }
